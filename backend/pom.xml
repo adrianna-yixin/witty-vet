@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>net.yixin</groupId>
-	<artifactId>witty-vet</artifactId>
+	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>witty-vet</name>
 	<description>A Web App for Pet Owners and Veterinarians</description>
