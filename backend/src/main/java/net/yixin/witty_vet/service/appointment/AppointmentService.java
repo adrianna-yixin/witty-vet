@@ -1,12 +1,13 @@
 package net.yixin.witty_vet.service.appointment;
 
 import net.yixin.witty_vet.model.Appointment;
+import net.yixin.witty_vet.request.AppointmentBookingRequest;
 import net.yixin.witty_vet.request.AppointmentUpdateRequest;
 
 import java.util.List;
 
 public interface AppointmentService {
-    Appointment createAppointment(Appointment appointment, Long senderId, Long recipientId);
+    Appointment createAppointment(AppointmentBookingRequest request, Long senderId, Long recipientId);
     List<Appointment> getAllAppointments();
     Appointment getAppointmentById(Long id);
     Appointment getAppointmentByNo(String appointmentNo);

@@ -3,6 +3,7 @@ package net.yixin.witty_vet.controller;
 import lombok.RequiredArgsConstructor;
 import net.yixin.witty_vet.exception.ResourceNotFoundException;
 import net.yixin.witty_vet.model.Appointment;
+import net.yixin.witty_vet.request.AppointmentBookingRequest;
 import net.yixin.witty_vet.request.AppointmentUpdateRequest;
 import net.yixin.witty_vet.response.ApiResponse;
 import net.yixin.witty_vet.service.appointment.AppointmentService;
@@ -23,10 +24,10 @@ public class AppointmentController {
     @PostMapping(UrlMapping.BOOK_APPOINTMENT)
     public ResponseEntity<ApiResponse> bookAppointment(@RequestParam Long senderId,
                                                        @RequestParam Long recipientId,
-                                                       @RequestBody Appointment appointment) {
+                                                       @RequestBody AppointmentBookingRequest request) {
         try {
-            Appointment theAppointment = appointmentService.createAppointment(appointment, senderId, recipientId);
-            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.SUCCESS, theAppointment), HttpStatus.CREATED);
+            Appointment theAppointment = appointmentService.createAppointment(request, senderId, recipientId);
+            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.CREATE_SUCCESS, theAppointment), HttpStatus.CREATED);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -38,7 +39,7 @@ public class AppointmentController {
     public ResponseEntity<ApiResponse> getAllAppointments() {
         try {
             List<Appointment> appointments = appointmentService.getAllAppointments();
-            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.FOUND, appointments), HttpStatus.FOUND);
+            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.RESOURCE_FOUND, appointments), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -48,7 +49,7 @@ public class AppointmentController {
     public ResponseEntity<ApiResponse> getAppointmentById(@PathVariable Long appointmentId) {
         try {
             Appointment appointment = appointmentService.getAppointmentById(appointmentId);
-            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.FOUND, appointment), HttpStatus.FOUND);
+            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.RESOURCE_FOUND, appointment), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -60,7 +61,7 @@ public class AppointmentController {
     public ResponseEntity<ApiResponse> getAppointmentByAppointmentNo(@PathVariable String appointmentNo) {
         try {
             Appointment appointment = appointmentService.getAppointmentByNo(appointmentNo);
-            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.FOUND, appointment), HttpStatus.FOUND);
+            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.RESOURCE_FOUND, appointment), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
         } catch (Exception e) {

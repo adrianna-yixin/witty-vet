@@ -6,7 +6,7 @@ import net.yixin.witty_vet.dto.UserDto;
 import net.yixin.witty_vet.exception.ResourceNotFoundException;
 import net.yixin.witty_vet.exception.UserAlreadyExistsException;
 import net.yixin.witty_vet.model.User;
-import net.yixin.witty_vet.request.RegistrationRequest;
+import net.yixin.witty_vet.request.UserRegistrationRequest;
 import net.yixin.witty_vet.request.UserUpdateRequest;
 import net.yixin.witty_vet.response.ApiResponse;
 import net.yixin.witty_vet.service.user.UserService;
@@ -26,11 +26,11 @@ public class UserController {
     private final EntityConverter<User, UserDto> entityConverter;
 
     @PostMapping(UrlMapping.REGISTER_USER)
-    public ResponseEntity<ApiResponse> register(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<ApiResponse> register(@RequestBody UserRegistrationRequest request) {
         try {
             User user = userService.register(request);
             UserDto registeredUser = entityConverter.mapEntityToDto(user, UserDto.class);
-            return new ResponseEntity<> (new ApiResponse(FeedbackMessage.SUCCESS, registeredUser), HttpStatus.CREATED);
+            return new ResponseEntity<> (new ApiResponse(FeedbackMessage.CREATE_SUCCESS, registeredUser), HttpStatus.CREATED);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class UserController {
     @GetMapping(UrlMapping.GET_ALL_USERS)
     public ResponseEntity<ApiResponse> getAllUsers() {
         List<UserDto> users = userService.getAllUsers();
-        return new ResponseEntity<>(new ApiResponse(FeedbackMessage.FOUND, users), HttpStatus.FOUND);
+        return new ResponseEntity<>(new ApiResponse(FeedbackMessage.RESOURCE_FOUND, users), HttpStatus.OK);
     }
 
     @GetMapping(UrlMapping.GET_USER_BY_ID)
@@ -49,7 +49,7 @@ public class UserController {
         try {
             User existingUser = userService.findById(userId);
             UserDto existingUserDto = entityConverter.mapEntityToDto(existingUser, UserDto.class);
-            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.FOUND, existingUserDto), HttpStatus.FOUND);
+            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.RESOURCE_FOUND, existingUserDto), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
         } catch (Exception e) {

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.yixin.witty_vet.exception.UserAlreadyExistsException;
 import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.repository.UserRepository;
-import net.yixin.witty_vet.request.RegistrationRequest;
+import net.yixin.witty_vet.request.UserRegistrationRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,14 +16,14 @@ public class SimpleUserFactory implements UserFactory {
     private final AdminFactory adminFactory;
 
     @Override
-    public User createUser(RegistrationRequest registrationRequest) {
-        if (userRepository.existsByEmail(registrationRequest.getEmail())) {
-            throw new UserAlreadyExistsException("Oops! User with email " + registrationRequest.getEmail() + " already exists!");
+    public User createUser(UserRegistrationRequest userRegistrationRequest) {
+        if (userRepository.existsByEmail(userRegistrationRequest.getEmail())) {
+            throw new UserAlreadyExistsException("Oops! User with email " + userRegistrationRequest.getEmail() + " already exists!");
         }
-        return switch (registrationRequest.getUserType()) {
-            case "VET" -> veterinarianFactory.createVeterinarian(registrationRequest);
-            case "PATIENT" -> patientFactory.createPatient(registrationRequest);
-            case "ADMIN" -> adminFactory.createAdmin(registrationRequest);
+        return switch (userRegistrationRequest.getUserType()) {
+            case "VET" -> veterinarianFactory.createVeterinarian(userRegistrationRequest);
+            case "PATIENT" -> patientFactory.createPatient(userRegistrationRequest);
+            case "ADMIN" -> adminFactory.createAdmin(userRegistrationRequest);
             default -> null;
         };
     }

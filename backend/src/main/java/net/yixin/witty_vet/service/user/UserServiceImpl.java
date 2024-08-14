@@ -7,7 +7,7 @@ import net.yixin.witty_vet.exception.ResourceNotFoundException;
 import net.yixin.witty_vet.factory.UserFactory;
 import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.repository.UserRepository;
-import net.yixin.witty_vet.request.RegistrationRequest;
+import net.yixin.witty_vet.request.UserRegistrationRequest;
 import net.yixin.witty_vet.request.UserUpdateRequest;
 import net.yixin.witty_vet.utils.FeedbackMessage;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private final EntityConverter<User, UserDto> entityConverter;
 
     @Override
-    public User register(RegistrationRequest request) {
+    public User register(UserRegistrationRequest request) {
         return userFactory.createUser(request);
     }
 

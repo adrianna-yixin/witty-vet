@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import net.yixin.witty_vet.enums.AppointmentStatus;
 import net.yixin.witty_vet.exception.ResourceNotFoundException;
 import net.yixin.witty_vet.model.Appointment;
+import net.yixin.witty_vet.model.Pet;
 import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.repository.AppointmentRepository;
 import net.yixin.witty_vet.repository.UserRepository;
+import net.yixin.witty_vet.request.AppointmentBookingRequest;
 import net.yixin.witty_vet.request.AppointmentUpdateRequest;
+import net.yixin.witty_vet.service.pet.PetService;
 import net.yixin.witty_vet.utils.FeedbackMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,12 +26,21 @@ import java.util.Optional;
 public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
+    private final PetService petService;
 
+    @Transactional
     @Override
-    public Appointment createAppointment(Appointment appointment, Long senderId, Long recipientId) {
+    public Appointment createAppointment(AppointmentBookingRequest request, Long senderId, Long recipientId) {
         Optional<User> sender = userRepository.findById(senderId);
         Optional<User> recipient = userRepository.findById(recipientId);
         if (sender.isPresent() && recipient.isPresent()) {
+
+            Appointment appointment = request.getAppointment();
+            List<Pet> pets = request.getPets();
+            pets.forEach(pet -> pet.setAppointment(appointment));
+            List<Pet> savedPets = petService.savePetsForAppointment(pets);
+            appointment.setPets(savedPets);
+
             appointment.addPatient(sender.get());
             appointment.addVeterinarian(recipient.get());
             appointment.setAppointmentNo();

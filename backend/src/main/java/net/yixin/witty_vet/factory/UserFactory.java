@@ -1,8 +1,8 @@
 package net.yixin.witty_vet.factory;
 
 import net.yixin.witty_vet.model.User;
-import net.yixin.witty_vet.request.RegistrationRequest;
+import net.yixin.witty_vet.request.UserRegistrationRequest;
 
 public interface UserFactory {
-    public User createUser(RegistrationRequest registrationRequest);
+    public User createUser(UserRegistrationRequest userRegistrationRequest);
 }
