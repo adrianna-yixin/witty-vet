@@ -22,7 +22,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public Pet getPetById(Long petId) {
         return petRepository.findById(petId)
-                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public void deletePet(Long petId) {
         petRepository.findById(petId).ifPresentOrElse(petRepository::delete, () -> {
-            throw new ResourceNotFoundException(FeedbackMessage.NOT_FOUND);
+            throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);
         });
     }
 }

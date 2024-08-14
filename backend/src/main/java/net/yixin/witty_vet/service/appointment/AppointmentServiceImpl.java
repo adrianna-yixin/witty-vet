@@ -58,7 +58,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Appointment getAppointmentById(Long id) {
         return appointmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void deleteAppointment(Long id) {
         appointmentRepository.findById(id)
                 .ifPresentOrElse(appointmentRepository::delete, () -> {
-                    throw new ResourceNotFoundException(FeedbackMessage.NOT_FOUND);
+                    throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);
                 });
     }
 }

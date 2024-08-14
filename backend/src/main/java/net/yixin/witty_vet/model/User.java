@@ -29,10 +29,22 @@ public class User {
     private String password;
     private String userType;
     private boolean isEnabled;
+
     @CreationTimestamp
     private LocalDate createdAt;
+
     @Transient
     private String specialization;
+
     @Transient
     List<Appointment> appointments;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Photo photo;
+
+    public void removeUserPhoto() {
+        if (this.getPhoto() != null) {
+            this.setPhoto(null);
+        }
+    }
 }

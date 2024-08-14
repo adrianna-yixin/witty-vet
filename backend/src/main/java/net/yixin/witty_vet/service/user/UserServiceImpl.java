@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public void delete(Long userId) {
         userRepository.findById(userId)
                 .ifPresentOrElse(userRepository::delete, () -> {
-            throw new ResourceNotFoundException(FeedbackMessage.NOT_FOUND);
+            throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);
         });
     }
 }
