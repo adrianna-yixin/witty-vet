@@ -1,4 +1,4 @@
-package net.yixin.witty_vet.service;
+package net.yixin.witty_vet.service.user;
 
 import net.yixin.witty_vet.dto.UserDto;
 import net.yixin.witty_vet.model.User;

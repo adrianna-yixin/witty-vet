@@ -9,7 +9,7 @@ import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.request.RegistrationRequest;
 import net.yixin.witty_vet.request.UserUpdateRequest;
 import net.yixin.witty_vet.response.ApiResponse;
-import net.yixin.witty_vet.service.UserService;
+import net.yixin.witty_vet.service.user.UserService;
 import net.yixin.witty_vet.utils.FeedbackMessage;
 import net.yixin.witty_vet.utils.UrlMapping;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class UserController {
         try {
             User user = userService.register(request);
             UserDto registeredUser = entityConverter.mapEntityToDto(user, UserDto.class);
-            return new ResponseEntity<> (new ApiResponse(FeedbackMessage.REGISTER_SUCCESS, registeredUser), HttpStatus.CREATED);
+            return new ResponseEntity<> (new ApiResponse(FeedbackMessage.SUCCESS, registeredUser), HttpStatus.CREATED);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.CONFLICT);
         } catch (Exception e) {

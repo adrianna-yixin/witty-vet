@@ -1,4 +1,4 @@
-package net.yixin.witty_vet.service.impl;
+package net.yixin.witty_vet.service.user;
 
 import lombok.RequiredArgsConstructor;
 import net.yixin.witty_vet.dto.EntityConverter;
@@ -9,7 +9,7 @@ import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.repository.UserRepository;
 import net.yixin.witty_vet.request.RegistrationRequest;
 import net.yixin.witty_vet.request.UserUpdateRequest;
-import net.yixin.witty_vet.service.UserService;
+import net.yixin.witty_vet.utils.FeedbackMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.NOT_FOUND));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public void delete(Long userId) {
         userRepository.findById(userId)
                 .ifPresentOrElse(userRepository::delete, () -> {
-            throw new ResourceNotFoundException("User with id " + userId + " not found.");
+            throw new ResourceNotFoundException(FeedbackMessage.NOT_FOUND);
         });
     }
 }
