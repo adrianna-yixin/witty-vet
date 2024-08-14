@@ -18,7 +18,7 @@ public class SimpleUserFactory implements UserFactory {
     @Override
     public User createUser(RegistrationRequest registrationRequest) {
         if (userRepository.existsByEmail(registrationRequest.getEmail())) {
-            throw new UserAlreadyExistsException("Oops! User with this email already exists!");
+            throw new UserAlreadyExistsException("Oops! User with email " + registrationRequest.getEmail() + " already exists!");
         }
         return switch (registrationRequest.getUserType()) {
             case "VET" -> veterinarianFactory.createVeterinarian(registrationRequest);
