@@ -1,7 +1,7 @@
 package net.yixin.witty_vet.factory;
 
 import lombok.RequiredArgsConstructor;
-import net.yixin.witty_vet.exception.UserAlreadyExistsException;
+import net.yixin.witty_vet.exception.AlreadyExistsException;
 import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.repository.UserRepository;
 import net.yixin.witty_vet.request.UserRegistrationRequest;
@@ -18,7 +18,7 @@ public class SimpleUserFactory implements UserFactory {
     @Override
     public User createUser(UserRegistrationRequest userRegistrationRequest) {
         if (userRepository.existsByEmail(userRegistrationRequest.getEmail())) {
-            throw new UserAlreadyExistsException("Oops! User with email " + userRegistrationRequest.getEmail() + " already exists!");
+            throw new AlreadyExistsException("Oops! User with email " + userRegistrationRequest.getEmail() + " already exists!");
         }
         return switch (userRegistrationRequest.getUserType()) {
             case "VET" -> veterinarianFactory.createVeterinarian(userRegistrationRequest);

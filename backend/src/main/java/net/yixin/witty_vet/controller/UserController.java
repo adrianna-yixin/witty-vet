@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.yixin.witty_vet.dto.EntityConverter;
 import net.yixin.witty_vet.dto.UserDto;
 import net.yixin.witty_vet.exception.ResourceNotFoundException;
-import net.yixin.witty_vet.exception.UserAlreadyExistsException;
+import net.yixin.witty_vet.exception.AlreadyExistsException;
 import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.request.UserRegistrationRequest;
 import net.yixin.witty_vet.request.UserUpdateRequest;
@@ -31,7 +31,7 @@ public class UserController {
             User user = userService.register(request);
             UserDto registeredUser = entityConverter.mapEntityToDto(user, UserDto.class);
             return new ResponseEntity<> (new ApiResponse(FeedbackMessage.CREATE_SUCCESS, registeredUser), HttpStatus.CREATED);
-        } catch (UserAlreadyExistsException e) {
+        } catch (AlreadyExistsException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -11,6 +11,7 @@ import net.yixin.witty_vet.repository.UserRepository;
 import net.yixin.witty_vet.request.AppointmentBookingRequest;
 import net.yixin.witty_vet.request.AppointmentUpdateRequest;
 import net.yixin.witty_vet.service.pet.PetService;
+import net.yixin.witty_vet.service.user.UserService;
 import net.yixin.witty_vet.utils.FeedbackMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.setStatus(AppointmentStatus.WAITING_FOR_APPROVAL);
             return appointmentRepository.save(appointment);
         }
-        throw new ResourceNotFoundException(FeedbackMessage.SENDER_RECIPIENT_NOT_FOUNT);
+        throw new ResourceNotFoundException(FeedbackMessage.SENDER_OR_RECIPIENT_NOT_FOUNT);
     }
 
     @Override
