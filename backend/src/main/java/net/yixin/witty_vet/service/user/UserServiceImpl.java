@@ -1,7 +1,6 @@
 package net.yixin.witty_vet.service.user;
 
 import lombok.RequiredArgsConstructor;
-import net.yixin.witty_vet.dto.EntityConverter;
 import net.yixin.witty_vet.dto.UserDto;
 import net.yixin.witty_vet.exception.ResourceNotFoundException;
 import net.yixin.witty_vet.factory.UserFactory;
@@ -10,6 +9,7 @@ import net.yixin.witty_vet.repository.UserRepository;
 import net.yixin.witty_vet.request.UserRegistrationRequest;
 import net.yixin.witty_vet.request.UserUpdateRequest;
 import net.yixin.witty_vet.utils.FeedbackMessage;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserFactory userFactory;
-    private final EntityConverter<User, UserDto> entityConverter;
+    private final ModelMapper modelMapper;
 
     @Override
     public User register(UserRegistrationRequest request) {
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(user -> entityConverter.mapEntityToDto(user, UserDto.class))
+                .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
     }
 
