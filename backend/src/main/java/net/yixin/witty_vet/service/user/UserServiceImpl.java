@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     @Override
-    public User register(UserRegistrationRequest request) {
+    public User registerUser(UserRegistrationRequest request) {
         return userFactory.createUser(request);
     }
 
@@ -36,14 +36,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long userId) {
+    public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
     }
 
     @Override
-    public User update(Long userId, UserUpdateRequest request) {
-        User user = findById(userId);
+    public User updateUser(Long userId, UserUpdateRequest request) {
+        User user = findUserById(userId);
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setGender(request.getGender());
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(Long userId) {
+    public void deleteUser(Long userId) {
         userRepository.findById(userId)
                 .ifPresentOrElse(userRepository::delete, () -> {
             throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);

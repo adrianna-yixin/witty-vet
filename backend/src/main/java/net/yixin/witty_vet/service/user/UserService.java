@@ -8,9 +8,9 @@ import net.yixin.witty_vet.request.UserUpdateRequest;
 import java.util.List;
 
 public interface UserService {
-    User register(UserRegistrationRequest request);
+    User registerUser(UserRegistrationRequest request);
     List<UserDto> getAllUsers();
-    User findById(Long userId);
-    User update(Long userId, UserUpdateRequest request);
-    void delete(Long userId);
+    User findUserById(Long userId);
+    User updateUser(Long userId, UserUpdateRequest request);
+    void deleteUser(Long userId);
 }
