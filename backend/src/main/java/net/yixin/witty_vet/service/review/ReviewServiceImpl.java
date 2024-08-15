@@ -26,7 +26,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review saveReview(Long reviewerId, Long veterinarianId, Review review) {
-//        validateReviewConditions(reviewerId, veterinarianId);
+        validateReviewConditions(reviewerId, veterinarianId);
         return completeAndSaveReview(reviewerId, veterinarianId, review);
     }
 
