@@ -7,7 +7,7 @@ import net.yixin.witty_vet.request.AppointmentUpdateRequest;
 import java.util.List;
 
 public interface AppointmentService {
-    Appointment createAppointment(AppointmentBookingRequest request, Long senderId, Long recipientId);
+    Appointment createAppointment(Long senderId, Long recipientId, AppointmentBookingRequest request);
     List<Appointment> getAllAppointments();
     Appointment getAppointmentById(Long id);
     Appointment getAppointmentByNo(String appointmentNo);

@@ -26,7 +26,7 @@ public class AppointmentController {
                                                        @RequestParam Long recipientId,
                                                        @RequestBody AppointmentBookingRequest request) {
         try {
-            Appointment theAppointment = appointmentService.createAppointment(request, senderId, recipientId);
+            Appointment theAppointment = appointmentService.createAppointment(senderId, recipientId, request);
             return new ResponseEntity<>(new ApiResponse(FeedbackMessage.CREATE_SUCCESS, theAppointment), HttpStatus.CREATED);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);

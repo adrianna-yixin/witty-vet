@@ -26,14 +26,14 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review saveReview(Long reviewerId, Long veterinarianId, Review review) {
-        validateReviewConditions(reviewerId, veterinarianId);
+//        validateReviewConditions(reviewerId, veterinarianId);
         return completeAndSaveReview(reviewerId, veterinarianId, review);
     }
 
     private void validateReviewConditions(Long reviewerId, Long veterinarianId) {
         validateNotSelfReview(reviewerId, veterinarianId);
-//        hasNotReviewerSubmittedReviewForVeterinarian(reviewerId, veterinarianId);
-//        hasReviewerCompletedAppointmentWithVeterinarian(reviewerId, veterinarianId);
+        hasNotReviewerSubmittedReviewForVeterinarian(reviewerId, veterinarianId);
+        hasReviewerCompletedAppointmentWithVeterinarian(reviewerId, veterinarianId);
     }
 
     private void validateNotSelfReview(Long reviewerId, Long veterinarianId) {
@@ -42,19 +42,19 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
-//    private void hasNotReviewerSubmittedReviewForVeterinarian(Long reviewerId, Long veterinarianId) {
-//        boolean hasReviewed = reviewRepository.existsByVeterinarianIdAndPatientId(veterinarianId, reviewerId);
-//        if (hasReviewed) {
-//            throw new AlreadyExistsException(FeedbackMessage.ALREADY_REVIEWED);
-//        }
-//    }
+    private void hasNotReviewerSubmittedReviewForVeterinarian(Long reviewerId, Long veterinarianId) {
+        boolean hasReviewed = reviewRepository.existsByVeterinarianIdAndPatientId(veterinarianId, reviewerId);
+        if (hasReviewed) {
+            throw new AlreadyExistsException(FeedbackMessage.ALREADY_REVIEWED);
+        }
+    }
 
-//    private void hasReviewerCompletedAppointmentWithVeterinarian(Long reviewerId, Long veterinarianId) {
-//        boolean hasCompletedAppointment = appointmentRepository.existsByPatientIdAndVeterinarianIdAndStatus(reviewerId, veterinarianId, AppointmentStatus.COMPLETED);
-//        if (!hasCompletedAppointment) {
-//            throw new IllegalStateException(FeedbackMessage.SHOULD_COMPLETE_APPOINTMENT);
-//        }
-//    }
+    private void hasReviewerCompletedAppointmentWithVeterinarian(Long reviewerId, Long veterinarianId) {
+        boolean hasCompletedAppointment = appointmentRepository.existsByPatientIdAndVeterinarianIdAndStatus(reviewerId, veterinarianId, AppointmentStatus.COMPLETED);
+        if (!hasCompletedAppointment) {
+            throw new IllegalStateException(FeedbackMessage.SHOULD_COMPLETE_APPOINTMENT);
+        }
+    }
 
     private Review completeAndSaveReview(Long reviewerId, Long veterinarianId, Review review) {
         User reviewer = userRepository.findById(reviewerId).orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.VET_OR_PATIENT_NOT_FOUND));

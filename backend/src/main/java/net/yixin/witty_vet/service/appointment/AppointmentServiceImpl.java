@@ -11,7 +11,6 @@ import net.yixin.witty_vet.repository.UserRepository;
 import net.yixin.witty_vet.request.AppointmentBookingRequest;
 import net.yixin.witty_vet.request.AppointmentUpdateRequest;
 import net.yixin.witty_vet.service.pet.PetService;
-import net.yixin.witty_vet.service.user.UserService;
 import net.yixin.witty_vet.utils.FeedbackMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,24 +28,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Transactional
     @Override
-    public Appointment createAppointment(AppointmentBookingRequest request, Long senderId, Long recipientId) {
-        Optional<User> sender = userRepository.findById(senderId);
-        Optional<User> recipient = userRepository.findById(recipientId);
-        if (sender.isPresent() && recipient.isPresent()) {
-
-            Appointment appointment = request.getAppointment();
-            List<Pet> pets = request.getPets();
-            pets.forEach(pet -> pet.setAppointment(appointment));
-            List<Pet> savedPets = petService.savePetsForAppointment(pets);
-            appointment.setPets(savedPets);
-
-            appointment.addPatient(sender.get());
-            appointment.addVeterinarian(recipient.get());
-            appointment.setAppointmentNo();
-            appointment.setStatus(AppointmentStatus.WAITING_FOR_APPROVAL);
-            return appointmentRepository.save(appointment);
-        }
-        throw new ResourceNotFoundException(FeedbackMessage.SENDER_OR_RECIPIENT_NOT_FOUNT);
+    public Appointment createAppointment(Long senderId, Long recipientId, AppointmentBookingRequest request) {
+        User sender = findSenderOrRecipientById(senderId);
+        User recipient = findSenderOrRecipientById(recipientId);
+        Appointment appointment = configureAppointment(request, sender, recipient);
+        savePetsForAppointment(request.getPets(), appointment);
+        return appointmentRepository.save(appointment);
+    }
+    private User findSenderOrRecipientById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.SENDER_OR_RECIPIENT_NOT_FOUNT));
+    }
+    private Appointment configureAppointment(AppointmentBookingRequest request, User sender, User recipient) {
+        Appointment appointment = request.getAppointment();
+        appointment.setPatient(sender);
+        appointment.setVeterinarian(recipient);
+        appointment.setAppointmentNo();
+        appointment.setStatus(AppointmentStatus.WAITING_FOR_APPROVAL);
+        return appointment;
+    }
+    private void savePetsForAppointment(List<Pet> pets, Appointment appointment) {
+        pets.forEach(pet -> pet.setAppointment(appointment));
+        List<Pet> savedPets = petService.savePetsForAppointment(pets);
+        appointment.setPets(savedPets);
     }
 
     @Override
@@ -57,8 +59,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Appointment getAppointmentById(Long id) {
-        return appointmentRepository.findById(id)
+    public Appointment getAppointmentById(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
     }
 
@@ -68,22 +70,27 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Appointment updateAppointment(Long id, AppointmentUpdateRequest request) {
-        Appointment existingAppointment = getAppointmentById(id);
-        if (!Objects.equals(existingAppointment.getStatus(), AppointmentStatus.WAITING_FOR_APPROVAL)) {
+    public Appointment updateAppointment(Long appointmentId, AppointmentUpdateRequest appointmentUpdateRequest) {
+        Appointment existingAppointment = getAppointmentById(appointmentId);
+        validateAppointmentStatus(existingAppointment);
+        updateAppointmentDetails(existingAppointment, appointmentUpdateRequest);
+        return appointmentRepository.save(existingAppointment);
+    }
+    private void validateAppointmentStatus(Appointment appointment) {
+        if (!AppointmentStatus.WAITING_FOR_APPROVAL.equals(appointment.getStatus())) {
             throw new IllegalStateException(FeedbackMessage.ALREADY_APPROVED);
         }
-        existingAppointment.setAppointmentDate(LocalDate.parse(request.getAppointmentDate()));
-        existingAppointment.setAppointmentTime(LocalTime.parse(request.getAppointmentTime()));
-        existingAppointment.setReason(request.getReason());
-        return appointmentRepository.save(existingAppointment);
+    }
+    private void updateAppointmentDetails(Appointment appointment, AppointmentUpdateRequest appointmentUpdateRequest) {
+        appointment.setAppointmentDate(LocalDate.parse(appointmentUpdateRequest.getAppointmentDate()));
+        appointment.setAppointmentTime(LocalTime.parse(appointmentUpdateRequest.getAppointmentTime()));
+        appointment.setReason(appointmentUpdateRequest.getReason());
     }
 
     @Override
-    public void deleteAppointment(Long id) {
-        appointmentRepository.findById(id)
-                .ifPresentOrElse(appointmentRepository::delete, () -> {
-                    throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);
-                });
+    public void deleteAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
+        appointmentRepository.delete(appointment);
     }
 }
