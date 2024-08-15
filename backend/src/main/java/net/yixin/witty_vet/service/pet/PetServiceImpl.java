@@ -38,8 +38,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void deletePet(Long petId) {
-        petRepository.findById(petId).ifPresentOrElse(petRepository::delete, () -> {
-            throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);
-        });
+        petRepository.findById(petId).orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
+        petRepository.deleteById(petId);
     }
 }
