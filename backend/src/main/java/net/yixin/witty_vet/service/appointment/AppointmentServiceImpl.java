@@ -1,6 +1,8 @@
 package net.yixin.witty_vet.service.appointment;
 
 import lombok.RequiredArgsConstructor;
+import net.yixin.witty_vet.dto.AppointmentDto;
+import net.yixin.witty_vet.dto.PetDto;
 import net.yixin.witty_vet.enums.AppointmentStatus;
 import net.yixin.witty_vet.exception.ResourceNotFoundException;
 import net.yixin.witty_vet.model.Appointment;
@@ -12,6 +14,7 @@ import net.yixin.witty_vet.request.AppointmentBookingRequest;
 import net.yixin.witty_vet.request.AppointmentUpdateRequest;
 import net.yixin.witty_vet.service.pet.PetService;
 import net.yixin.witty_vet.utils.FeedbackMessage;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final PetService petService;
+    private final ModelMapper modelMapper;
 
     @Transactional
     @Override
@@ -35,10 +39,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         savePetsForAppointment(request.getPets(), appointment);
         return appointmentRepository.save(appointment);
     }
+
     private User findSenderOrRecipientById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.SENDER_OR_RECIPIENT_NOT_FOUNT));
     }
+
     private Appointment configureAppointment(AppointmentBookingRequest request, User sender, User recipient) {
         Appointment appointment = request.getAppointment();
         appointment.setPatient(sender);
@@ -47,6 +53,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setStatus(AppointmentStatus.WAITING_FOR_APPROVAL);
         return appointment;
     }
+
     private void savePetsForAppointment(List<Pet> pets, Appointment appointment) {
         pets.forEach(pet -> pet.setAppointment(appointment));
         List<Pet> savedPets = petService.savePetsForAppointment(pets);
@@ -57,6 +64,32 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
+
+    @Override
+    public List<AppointmentDto> getUserAppointments(Long userId) {
+        List<Appointment> appointments = appointmentRepository.findAllByUserId(userId);
+        return convertToAppointmentDtos(appointments);
+    }
+
+    private List<AppointmentDto> convertToAppointmentDtos(List<Appointment> appointments) {
+        return appointments.stream()
+                .map(this::convertToAppointmentDto)
+                .toList();
+    }
+
+    private AppointmentDto convertToAppointmentDto(Appointment appointment) {
+        AppointmentDto appointmentDto = modelMapper.map(appointment, AppointmentDto.class);
+        List<PetDto> petDtos = convertToPetDtos(appointment.getPets());
+        appointmentDto.setPets(petDtos);
+        return appointmentDto;
+    }
+
+    private List<PetDto> convertToPetDtos(List<Pet> pets) {
+        return pets.stream()
+                .map(pet -> modelMapper.map(pet, PetDto.class))
+                .toList();
+    }
+
 
     @Override
     public Appointment getAppointmentById(Long appointmentId) {
@@ -76,11 +109,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         updateAppointmentDetails(existingAppointment, appointmentUpdateRequest);
         return appointmentRepository.save(existingAppointment);
     }
+
     private void validateAppointmentStatus(Appointment appointment) {
         if (!AppointmentStatus.WAITING_FOR_APPROVAL.equals(appointment.getStatus())) {
             throw new IllegalStateException(FeedbackMessage.ALREADY_APPROVED);
         }
     }
+
     private void updateAppointmentDetails(Appointment appointment, AppointmentUpdateRequest appointmentUpdateRequest) {
         appointment.setAppointmentDate(LocalDate.parse(appointmentUpdateRequest.getAppointmentDate()));
         appointment.setAppointmentTime(LocalTime.parse(appointmentUpdateRequest.getAppointmentTime()));
