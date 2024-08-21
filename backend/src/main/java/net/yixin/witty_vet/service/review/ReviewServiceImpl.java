@@ -25,52 +25,52 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
 
     @Override
-    public Review saveReview(Long reviewerId, Long veterinarianId, Review review) {
-        validateReviewConditions(reviewerId, veterinarianId);
-        return completeAndSaveReview(reviewerId, veterinarianId, review);
+    public Review saveReview(Long patientId, Long veterinarianId, Review review) {
+        validateReviewConditions(patientId, veterinarianId);
+        return completeAndSaveReview(patientId, veterinarianId, review);
     }
 
-    private void validateReviewConditions(Long reviewerId, Long veterinarianId) {
-        validateNotSelfReview(reviewerId, veterinarianId);
-        hasNotReviewerSubmittedReviewForVeterinarian(reviewerId, veterinarianId);
-        hasReviewerCompletedAppointmentWithVeterinarian(reviewerId, veterinarianId);
+    private void validateReviewConditions(Long patientId, Long veterinarianId) {
+        validateNotSelfReview(patientId, veterinarianId);
+        hasNotPatientSubmittedReviewForVeterinarian(patientId, veterinarianId);
+        hasPatientCompletedAppointmentWithVeterinarian(patientId, veterinarianId);
     }
 
-    private void validateNotSelfReview(Long reviewerId, Long veterinarianId) {
-        if (veterinarianId.equals(reviewerId)) {
+    private void validateNotSelfReview(Long patientId, Long veterinarianId) {
+        if (veterinarianId.equals(patientId)) {
             throw new IllegalArgumentException(FeedbackMessage.CANNOT_SELF_REVIEW);
         }
     }
 
-    private void hasNotReviewerSubmittedReviewForVeterinarian(Long reviewerId, Long veterinarianId) {
-        boolean hasReviewed = reviewRepository.existsByVeterinarianIdAndPatientId(veterinarianId, reviewerId);
+    private void hasNotPatientSubmittedReviewForVeterinarian(Long patientId, Long veterinarianId) {
+        boolean hasReviewed = reviewRepository.existsByVeterinarianIdAndPatientId(veterinarianId, patientId);
         if (hasReviewed) {
             throw new AlreadyExistsException(FeedbackMessage.ALREADY_REVIEWED);
         }
     }
 
-    private void hasReviewerCompletedAppointmentWithVeterinarian(Long reviewerId, Long veterinarianId) {
-        boolean hasCompletedAppointment = appointmentRepository.existsByPatientIdAndVeterinarianIdAndStatus(reviewerId, veterinarianId, AppointmentStatus.COMPLETED);
+    private void hasPatientCompletedAppointmentWithVeterinarian(Long patientId, Long veterinarianId) {
+        boolean hasCompletedAppointment = appointmentRepository.existsByPatientIdAndVeterinarianIdAndStatus(patientId, veterinarianId, AppointmentStatus.COMPLETED);
         if (!hasCompletedAppointment) {
             throw new IllegalStateException(FeedbackMessage.SHOULD_COMPLETE_APPOINTMENT);
         }
     }
 
-    private Review completeAndSaveReview(Long reviewerId, Long veterinarianId, Review review) {
-        User reviewer = userRepository.findById(reviewerId).orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.VET_OR_PATIENT_NOT_FOUND));
+    private Review completeAndSaveReview(Long patientId, Long veterinarianId, Review review) {
+        User patient = userRepository.findById(patientId).orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.VET_OR_PATIENT_NOT_FOUND));
 
         User veterinarian = userRepository.findById(veterinarianId).orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.VET_OR_PATIENT_NOT_FOUND));
 
-        review.setPatient(reviewer);
+        review.setPatient(patient);
         review.setVeterinarian(veterinarian);
 
         return reviewRepository.save(review);
     }
 
     @Override
-    public Page<Review> findAllReviewsByReviewerId(Long reviewerId, int page, int size) {
+    public Page<Review> findAllReviewsByPatientId(Long patientId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return reviewRepository.findAllByReviewerId(reviewerId, pageRequest);
+        return reviewRepository.findAllByPatientId(patientId, pageRequest);
     }
 
     @Override
@@ -87,8 +87,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review updateReview(Long reviewerId, ReviewUpdateRequest updateRequest) {
-        Review existingReview = reviewRepository.findById(reviewerId)
+    public Review updateReview(Long patientId, ReviewUpdateRequest updateRequest) {
+        Review existingReview = reviewRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND));
         updateReviewDetails(existingReview, updateRequest);
         return reviewRepository.save(existingReview);

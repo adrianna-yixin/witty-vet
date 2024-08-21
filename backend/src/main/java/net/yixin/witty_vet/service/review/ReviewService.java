@@ -5,9 +5,9 @@ import net.yixin.witty_vet.request.ReviewUpdateRequest;
 import org.springframework.data.domain.Page;
 
 public interface ReviewService {
-    Review saveReview(Long reviewerId, Long veterinarianId, Review review);
-    Page<Review> findAllReviewsByReviewerId(Long reviewerId, int page, int size);
+    Review saveReview(Long patientId, Long veterinarianId, Review review);
+    Page<Review> findAllReviewsByPatientId(Long patientId, int page, int size);
     double getAverageRatingForVeterinarian(Long veterinarianId);
-    Review updateReview(Long reviewerId, ReviewUpdateRequest updateRequest);
+    Review updateReview(Long patientId, ReviewUpdateRequest updateRequest);
     void deleteReview(Long reviewId);
 }

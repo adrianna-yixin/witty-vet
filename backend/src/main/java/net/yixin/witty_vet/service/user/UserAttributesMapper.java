@@ -12,7 +12,6 @@ public class UserAttributesMapper {
         target.setGender(source.getGender());
         target.setPhoneNumber(source.getPhoneNumber());
         target.setEmail(source.getEmail());
-        target.setPassword(source.getPassword());
         target.setUserType(source.getUserType());
         target.setEnabled(source.isEnabled());
     }

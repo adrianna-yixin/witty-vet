@@ -1,13 +1,13 @@
 package net.yixin.witty_vet.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@JsonIgnoreProperties({"isEnabled", "appointmentCreatedAt", "photo"})
 public class UserDto {
     private Long id;
     private String firstName;
@@ -15,13 +15,11 @@ public class UserDto {
     private String gender;
     private String phoneNumber;
     private String email;
-    private String userType;
     private boolean isEnabled;
     private String specialization;
-    private LocalDate appointmentCreatedAt;
-    private List<AppointmentDto> appointmentDtos;
-    private List<ReviewDto> reviewDtos;
-    private Long imageId;
-    private byte[] image;
+    private List<AppointmentDto> appointments;
+    private List<ReviewDto> reviews;
+    private Long photoId;
+    private byte[] photo;
     private double averageRating;
 }

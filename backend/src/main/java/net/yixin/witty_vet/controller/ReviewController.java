@@ -24,9 +24,9 @@ public class ReviewController {
     private final ModelMapper modelMapper;
 
     @PostMapping(UrlMapping.SUBMIT_REVIEW)
-    public ResponseEntity<ApiResponse> createReview(@RequestParam Long reviewerId, @RequestParam Long veterinarianId, @RequestBody Review review) {
+    public ResponseEntity<ApiResponse> createReview(@RequestParam Long patientId, @RequestParam Long veterinarianId, @RequestBody Review review) {
         try {
-            Review savedReview = reviewService.saveReview(reviewerId, veterinarianId, review);
+            Review savedReview = reviewService.saveReview(patientId, veterinarianId, review);
             return new ResponseEntity<>(new ApiResponse(FeedbackMessage.CREATE_SUCCESS, savedReview.getId()), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.BAD_REQUEST);
@@ -40,10 +40,10 @@ public class ReviewController {
     }
 
     @GetMapping(UrlMapping.GET_USER_REVIEWS)
-    public ResponseEntity<ApiResponse> getReviewsByReviewerId(@PathVariable Long reviewerId,
-                                                              @RequestParam(defaultValue = "0") int page,
-                                                              @RequestParam(defaultValue = "5") int size) {
-        Page<Review> reviewPage = reviewService.findAllReviewsByReviewerId(reviewerId, page, size);
+    public ResponseEntity<ApiResponse> getReviewsByPatientId(@PathVariable Long patientId,
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "5") int size) {
+        Page<Review> reviewPage = reviewService.findAllReviewsByPatientId(patientId, page, size);
         Page<ReviewDto> reviewDtos = reviewPage.map((singleReview) -> modelMapper.map(singleReview, ReviewDto.class));
         return new ResponseEntity<>(new ApiResponse(FeedbackMessage.RESOURCE_NOT_FOUND, reviewDtos), HttpStatus.OK);
     }
@@ -62,10 +62,10 @@ public class ReviewController {
 
     @PutMapping(UrlMapping.UPDATE_REVIEW)
     public ResponseEntity<ApiResponse> updateReview(@RequestBody ReviewUpdateRequest updateRequest,
-                                                    @PathVariable Long reviewId) {
+                                                    @PathVariable Long patientId) {
         try {
-            Review updatedReview = reviewService.updateReview(reviewId, updateRequest);
-            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.UPDATE_SUCCESS, reviewId), HttpStatus.OK);
+            Review updatedReview = reviewService.updateReview(patientId, updateRequest);
+            return new ResponseEntity<>(new ApiResponse(FeedbackMessage.UPDATE_SUCCESS, patientId), HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
         }

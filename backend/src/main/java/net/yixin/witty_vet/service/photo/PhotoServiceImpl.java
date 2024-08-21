@@ -24,7 +24,6 @@ import java.util.Optional;
 public class PhotoServiceImpl implements PhotoService {
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
 
     @Override
     public Photo savePhoto(MultipartFile file, Long userId) throws IOException, SQLException {
@@ -46,9 +45,14 @@ public class PhotoServiceImpl implements PhotoService {
         return photo;
     }
     private void linkPhotoToUserAndSaveUser(Long userId, Photo photo) {
-        User user = userService.findUserById(userId);
-        user.setPhoto(photo);
-        userRepository.save(user);
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPhoto(photo);
+            userRepository.save(user);
+        } else {
+            throw new ResourceNotFoundException(FeedbackMessage.RESOURCE_NOT_FOUND);
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package net.yixin.witty_vet.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,6 @@ public class User {
     @Column(name = "mobile")
     private String phoneNumber;
     private String email;
-    private String password;
     private String userType;
     private boolean isEnabled;
 
