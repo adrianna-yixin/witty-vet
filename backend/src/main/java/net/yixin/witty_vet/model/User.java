@@ -1,6 +1,5 @@
 package net.yixin.witty_vet.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id

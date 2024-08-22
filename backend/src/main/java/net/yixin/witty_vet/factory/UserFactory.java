@@ -4,5 +4,5 @@ import net.yixin.witty_vet.model.User;
 import net.yixin.witty_vet.request.UserRegistrationRequest;
 
 public interface UserFactory {
-    public User createUser(UserRegistrationRequest userRegistrationRequest);
+    User createUser(UserRegistrationRequest userRegistrationRequest);
 }

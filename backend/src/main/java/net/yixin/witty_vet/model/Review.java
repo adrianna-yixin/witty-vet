@@ -25,7 +25,7 @@ public class Review {
     private User veterinarian;
 
     @ManyToOne
-    @JoinColumn(name = "reviewer_id")
+    @JoinColumn(name = "patient_id")
     private User patient;
 
     public void removeRelationshipWithAllUsers() {
